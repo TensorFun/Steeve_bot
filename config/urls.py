@@ -16,7 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path, include
 
+from steevebot.views import Hello
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^fb_mybot/', include('steevebot.urls')),
+    path('', Hello),
 ]

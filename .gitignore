@@ -3,3 +3,6 @@ __pycache__
 db.sqlite3
 migrations
 credentials.py
+*.conf
+*.ini
+uwsgi_params

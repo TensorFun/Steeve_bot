@@ -1,13 +1,21 @@
 # from django.shortcuts import render
 from django.views import generic
-from django.http.response import HttpResponse
+# from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .model_cmd import *
 from .messenger_api import *
 from .credentials import VERIFY_TOKEN
 
+from django.http import HttpResponse, JsonResponse
+
 # Create your views here.
+def Hello(request):
+    if request.method == "GET":
+        return JsonResponse("Hello World!", safe=False)
+    else:
+        return HttpResponse(status=404)
+
 
 def post_facebook_message(fbid, recevied_message):
     # user_details_url = "https://graph.facebook.com/v2.6/%s" % fbid

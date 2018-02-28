@@ -6,6 +6,8 @@ import pandas as pd
 
 from .urlshortener import *
 
+from .models import Job
+
 domain_name = 'https://www.dice.com'
 Key_location = 'New York, NY'
 
@@ -56,16 +58,28 @@ def steeve_crawler(Key_work):
         str1 = str(soup.find("",{"id":"jobdescSec"}))
         soup = BeautifulSoup(str1.replace('<br/>','\n'),'lxml')
         jobDescription = soup.text
-        url = work
+        url = get_shortenUrl(requests.utils.requote_uri(work))
+
+        Job(Title = jobTitle, 
+            Field = Key_work, 
+            Employer = jobEmployer, 
+            Location = jobLocation, 
+            PostTime = jobPostTime, 
+            skills = skills, 
+            employmentType = employmentType, 
+            baseSalary = baseSalary, 
+            jobDescription = jobDescription, 
+            url = url).save()
 
         output += "Title:\n" + jobTitle + "\n" + \
+                "\nField:\n" + Key_work + "\n" + \
                 "\nEmployer:\n" + jobEmployer + "\n" + \
                 "\nLocation:\n" + jobLocation + "\n" + \
                 "\nPostTime:\n" + jobPostTime + "\n" + \
                 "\nskills:\n" + skills + "\n" + \
                 "\nemploymentType:\n" + employmentType + "\n" + \
                 "\nbaseSalary:\n" + baseSalary + "\n" + \
-                "\nurl:\t" + get_shortenUrl(requests.utils.requote_uri(url))
-                # "\njobDescription:\n" + soup.text + \
+                "\nurl:\n" + url
+                # "\njobDescription:\n" + jobDescription + \
 
     return output

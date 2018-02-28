@@ -79,6 +79,14 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'yee0',
+    #     'USER': 'yee0',
+    #     'PASSWORD': 'yee0',
+    #     'HOST': '127.0.0.1',
+    #     'PORT': '5433',
+    # }
 }
 
 
@@ -106,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Taipei'
 
 USE_I18N = True
 
@@ -119,3 +127,22 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+
+from celery.schedules import crontab
+
+CELERY_BROKER_URL = 'amqp://username:password@localhost//'
+CELERY_RESULT_BACKEND = 'rpc://username:password@localhost//'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Taipei'
+CELERY_BEAT_SCHEDULE = {
+   'periodic_crawler': {
+        'task': 'steevebot.tasks.periodic_crawler',
+        'schedule': crontab(),
+        # 'args': ('Backend'),
+    },
+}
