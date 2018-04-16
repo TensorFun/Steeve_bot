@@ -9,7 +9,7 @@ from datetime import datetime
 # import concurrent.futures
 # from multiprocessing import Pool
 from billiard import Pool
-from .candidates_of_keyword import training_DNN()
+from .candidates_of_keyword import training_DNN
 
 @task
 def periodic_crawler():
