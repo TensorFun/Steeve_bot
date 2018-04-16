@@ -37,12 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'steevebot'
+    'corsheaders',
+    'steevebot',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -75,18 +77,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
     # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'yee0',
-    #     'USER': 'yee0',
-    #     'PASSWORD': 'yee0',
-    #     'HOST': '127.0.0.1',
-    #     'PORT': '5433',
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'yee0',
+        'USER': 'yee0',
+        'PASSWORD': 'yee0',
+        'HOST': '127.0.0.1',
+        'PORT': '5433',
+    }
 }
 
 
@@ -120,7 +122,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -129,7 +131,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
+CORS_ORIGIN_ALLOW_ALL = True
 
 from celery.schedules import crontab
 
@@ -138,11 +140,15 @@ CELERY_RESULT_BACKEND = 'rpc://username:password@localhost//'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/Taipei'
+CELERY_ENABLE_UTC = True
+# CELERY_TIMEZONE = 'Asia/Taipei'
 CELERY_BEAT_SCHEDULE = {
    'periodic_crawler': {
         'task': 'steevebot.tasks.periodic_crawler',
-        'schedule': crontab(),
-        # 'args': ('Backend'),
+        'schedule': crontab(minute=0, hour=0),
+    },
+    'invalid_link_inspector': {
+        'task': 'steevebot.tasks.remove_invalid_links',
+        'schedule': crontab(minute=0, hour='1-23'),
     },
 }

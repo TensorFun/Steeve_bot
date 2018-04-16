@@ -6,8 +6,14 @@ from django.utils.decorators import method_decorator
 from .model_cmd import *
 from .messenger_api import *
 from .credentials import VERIFY_TOKEN
+from .data_responser import *
+from .models import *
+from .pdf_extractor import convert
+from .candidates_of_keyword import get_jobs, get_applicants
 
 from django.http import HttpResponse, JsonResponse
+import json
+
 
 # Create your views here.
 def Hello(request):
@@ -16,6 +22,92 @@ def Hello(request):
     else:
         return HttpResponse(status=404)
 
+@csrf_exempt
+def text_CV(request):
+    if request.method == "POST":
+        # if request.body:
+        if request.POST:
+            json_data = request.POST
+            # json_data = json.loads(request.body)
+            # return JsonResponse(json_data, safe=False)
+            username = json_data["username"]
+            email = json_data["email"]
+            cv = json_data["CV"]
+
+            response = {"username": username, "email":email, "CV": cv}
+            return JsonResponse(response, safe=False)
+            # userPL, suggested_jobs, suggested_field = get_jobs(cv)
+            # if not User.objects.filter(email=email):
+            #     User.objects.create(username=username, email=email, PL=userPL)
+            # else:
+            #     User.objects.filter(email=email).update(username=username, PL=userPL)
+            
+            # response_dict = response_suggested_jobs(suggested_jobs, suggested_field)
+            # return JsonResponse(response_dict, safe=False)
+        else:
+            return HttpResponse("Please add username, email to your request body.")
+    else:
+        return HttpResponse("Please use POST.")
+
+@csrf_exempt
+def pdf_CV(request):
+    if request.method == "POST":
+        if request.POST:
+            username = request.POST['username']
+            email = request.POST['email']
+            if request.FILES:
+                pdffile = request.FILES["file"]
+                cv = convert(pdffile)
+            else:
+                return HttpResponse("Please add a file to your request files.")
+
+
+            response = {"username": username, "email":email, "CV": cv}
+            return JsonResponse(response, safe=False)
+            # userPL, suggested_jobs, suggested_field = get_jobs(cv)
+            
+            # if not User.objects.filter(email=email):
+            #     User.objects.create(username=username, email=email, PL=userPL)
+            # else:
+            #     User.objects.filter(email=email).update(username=username, PL=userPL)
+            
+            # response_dict = response_suggested_jobs(suggested_jobs, suggested_field)
+            # return JsonResponse(response_dict, safe=False)
+        else:
+            return HttpResponse("Please add username, email to your request body.")
+    else:
+        return HttpResponse("Please use POST.")
+
+@csrf_exempt
+def recruit_post(request):
+    if request.method == "POST":
+        if request.POST:
+            # json_data = json.loads(request.body)
+            json_data = request.POST
+            recruit_post = json_data["post"]
+            response = {"recruit_post": recruit_post}
+            return JsonResponse(response, safe=False)
+            # suggested_user_emails = get_applicants(recruit_post)
+            # response = response_suggested_user(suggested_user_emails)
+            # return JsonResponse(response, safe=False)
+        else:
+            return HttpResponse("Please add something to your request body.")
+    else:
+        return HttpResponse("Please use POST.")    
+
+@csrf_exempt
+def random_job(request):
+    if request.method == "POST":
+        return JsonResponse(random_data(), safe=False)
+    else:
+        return HttpResponse("Please use POST.")
+
+@csrf_exempt
+def all_job(request):
+    if request.method == "GET":
+        return JsonResponse(all_data(), safe=False)
+    else:
+        return HttpResponse("Please use GET.")
 
 def post_facebook_message(fbid, recevied_message):
     # user_details_url = "https://graph.facebook.com/v2.6/%s" % fbid
@@ -144,3 +236,4 @@ class MyBotView(generic.View):
                         return HttpResponse()
 
         return HttpResponse()
+

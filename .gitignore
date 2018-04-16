@@ -5,4 +5,8 @@ migrations
 credentials.py
 *.conf
 *.ini
+*.sock
 uwsgi_params
+dnn_model.ckpt.*
+celerybeat-schedule.*
+checkpoint

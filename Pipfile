@@ -1,0 +1,30 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+uwsgi = "*"
+"bs4" = "*"
+django = "*"
+requests = "*"
+"pdfminer.six" = "*"
+celery = "*"
+lxml = "*"
+numpy = "*"
+stem = "*"
+flashtext = "*"
+cython = "*"
+cysignals = "*"
+pyfasttext = "*"
+googlemaps = "*"
+dask = "*"
+tensorflow-gpu = "*"
+django-cors-headers = "*"
+"psycopg2-binary" = "*"
+"psycopg2" = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
