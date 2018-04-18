@@ -54,7 +54,7 @@ class TFIDF:
             scores.append((field, sum([score_table[pl] for pl in post if pl in self.words])))
 
         try:
-            return max(scores, key=lambda x: x[1])
+            return max(scores, key=lambda x: x[1])[0]
         except:
             return 0 # 不知道答案則猜 0 
 

@@ -2,8 +2,9 @@ import requests
 import re
 from bs4 import BeautifulSoup
 import json
-from multiprocessing import Pool
+
 # from billiard import Pool
+from multiprocessing import Pool
 import time
 
 import traceback
@@ -20,12 +21,12 @@ def retry_write_into_dict(input_data):
     href = []
     renewTorIP()
     try:
-        print("debug retry write into dict:", 1)
+        print("debug retry write into dict: 1")
         with Pool(processes=70) as pool:
             href += pool.map(write_into_dict, input_data) 
-        print("debug retry write into dict:", 2)
+        print("debug retry write into dict: 2")
     except:
-        print("debug retry write into dict:", 3)
+        print("debug retry write into dict: 3")
         print()
         traceback.print_exc()
         print()
@@ -46,10 +47,10 @@ def retry_fetch_article_content(href):
     return contents
 
 def daily_updater(Key_work):
-    print("debug:", 0)
+    print("debug: 0")
     
     renewTorIP()
-    print("debug:", 1)
+    print("debug: 1")
     start = time.time()
     
     domain_name = 'https://www.dice.com'
@@ -64,11 +65,14 @@ def daily_updater(Key_work):
     try:
         pages = int(str(soup.find("",{"id":"posiCountId"}).text).replace(',',''))//30
     except:
-        print("Load Pages Error. Stop Updating", Key_work)
+        print("Load Pages Error. Stop Updating %s" % Key_work)
         return
-    print('Total have ' + str(pages) + ' pages')
+    print('Total have %d pages' % pages)
 
-    print("debug:", 2)
+    if pages > 100:
+        pages = 100
+
+    print("debug: 2")
     input_data = [ (page, domain_name, Key_work, Key_location) for page in range(1, pages+1) ]
     
     href = retry_write_into_dict(input_data)
@@ -76,13 +80,13 @@ def daily_updater(Key_work):
     while not href:
         href = retry_write_into_dict(input_data)
         cc += 1
-        print("debug cc:", cc)
+        print("debug cc: %d" % cc)
 #     print(cc)
     
-    print("debug:", 3)
+    print("debug: 3")
 
     href = [ url for page_href in href for url in page_href ]
-    print("Total have : " + str(len(href)))
+    print("Total have: %d" % len(href))
 
     contents = retry_fetch_article_content(href)
     cc = 1
@@ -91,7 +95,7 @@ def daily_updater(Key_work):
         cc += 1
     print(cc)
 
-    print("debug:", 4)
+    print("debug: 4")
     
     renewTorIP()
 
@@ -101,7 +105,7 @@ def daily_updater(Key_work):
     create_data(Key_work, result)
     
     end = time.time()
-    print("\nDone with " + Key_work + " >>  " + str(end-start) + " sec")
+    print("\nDone with %s >>  %d sec" % (Key_work, end-start))
     
     # return result
     
@@ -112,7 +116,7 @@ def write_into_dict(input_data):
     try:
         response_page = session.get(domain_name+'/jobs/'+'q-'+Key_work+'-l-'+Key_location+'-radius-30-startPage-'+str(page)+'-jobs?', headers=headers)
     except:
-        print('Write into dict Error!!')
+        # print('Write into dict Error!!')
         raise
 
     soup1 = BeautifulSoup(response_page.text,'lxml')
@@ -128,7 +132,7 @@ def write_into_dict(input_data):
             print()
 
     if page%30 == 0:
-        print('page '+ str(page)+' is finished')
+        print('page %d is finished' % page)
         
     return page_href
 
@@ -269,4 +273,4 @@ def create_data(Key_work, data):
 
         print("Repeat Data: %d" % repeat_data_count)
     else:
-        print("Data is empty, Stop Updating " + Key_work)
+        print("Data is empty, Stop Updating %s" % Key_work)

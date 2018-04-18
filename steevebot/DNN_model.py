@@ -59,12 +59,16 @@ def get_pl_v(j,pl_cnt,NUM_PL,D_WORD):
     for pl in j:
 #         print(type(pl))
         if pl_cnt[PREDICT_FIELD].get(pl) == None:
+            print('can not get',pl)
             pass
         else:
             aaa[pl] = pl_cnt[PREDICT_FIELD].get(pl)
+    
+    print(sorted(dict(aaa).items(), key=itemgetter(1), reverse=True)[:8])
             
     for i, g in sorted(dict(aaa).items(), key=itemgetter(1), reverse=True)[:8]:
         try:
+            print('to vector',i)
             x = list(model[i])
             m = m + x
         except:
@@ -80,6 +84,14 @@ def get_pl_v(j,pl_cnt,NUM_PL,D_WORD):
             m = m + m
         elif len(m) == D_WORD*2:
                 m = m + m[0:D_WORD]
+    if len(m) != 2400:
+        m = []
+        m.append(model['python'])
+        m.append(model['java'])
+        m.append(model['sql'])
+        m.append(model['security'])
+        m = m+m
+        print('MATCH DEFAULT')
 
     return m
 
@@ -107,6 +119,7 @@ def pl_preprocessing(total_pl):
                 train_data.append(m)
                 train_y.append(l)
             else:
+
                 pass
         l += 1
 #                             print(i)
@@ -373,13 +386,15 @@ def get_all_raw_pl():
 
 # Input Job PL, and predict a field
 def get_predict_field(pl_job,pl_cnt):
-    print(in)
+    # print(in)
     reset_graph()
     NUM_PL = 8
     D_WORD = 300
+    print('pl_job DNN',pl_job)
 
     x = get_pl_v(pl_job,pl_cnt,NUM_PL,D_WORD)
     x = np.array(x)
+    # print(x)
     x = x.reshape([1,-1])
     
     restore_saver = tf.train.import_meta_graph(DNN_model_meta_path)

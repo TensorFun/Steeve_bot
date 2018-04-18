@@ -14,6 +14,7 @@ def save_pl_DB():
     key = list(ori_data.keys())
     to_DB = []
     for k in key: 
+        print(k)
         for num, job_num in enumerate(ori_data[k]):
             if num%500 ==0:
                 print(num)
@@ -48,6 +49,7 @@ def all_pl_data():
     key = list(pl_data.keys())
     total_data = []
     for k in key:
+        print(k)
         data = []
         for num, job_num in enumerate(pl_data[k]):
             job_pl = job_num["PL"]
@@ -103,7 +105,9 @@ def get_jobs(User_CV):
     cv_toDB = ",".join(cv_PL)
 #     predict_field = "Frontend"
     print('start predict f')
-    predict_field = 0
+    predict_field = Predict.predict_field(cv_PL)
+    print(predict_field)
+    # predict_field = 0
     # predict_field = get_predict_field(cv_PL,pl_cnt)
     # convert predict_field style
     print('get field ',predict_field)
@@ -143,9 +147,11 @@ def get_applicants(post):
     return applicants
 
 
-total_data = all_pl_data()
+# total_data = all_pl_data()
 
 # from .DNN_model import get_Dnn_model    
 # get_Dnn_model(total_data)
-a = get_applicants("html,javascript html, java,c,css,css,css")
-print(a)
+# a = get_applicants("html,javascript html, java,c,css,css,css")
+# a = get_jobs("html,javascript html, java,c,css,css,css")
+
+# print(a)

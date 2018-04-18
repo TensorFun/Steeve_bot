@@ -13,22 +13,38 @@ from .candidates_of_keyword import training_DNN
 
 @task
 def periodic_crawler():
-    # Job.objects.all().delete()
-    print("\n" + "start crawling the field 'Frontend' >> " + str(datetime.now()) + "\n")
+
+    print("\nstart crawling the field 'Frontend' >> %s\n" % str(datetime.now()))
     daily_updater("Frontend")
-    print("\n" + "start crawling the field 'Backend' >> " + str(datetime.now()) + "\n")
+
+    print("\nstart crawling the field 'Backend' >> %s\n" % str(datetime.now()))
     daily_updater("Backend")
-    print("\n" + "start removing invalid links >> " + str(datetime.now()) + "\n")
+
+    print("\nstart crawling the field 'Product management' >> %s\n" % str(datetime.now()))
+    daily_updater("Product management")
+
+    print("\nstart crawling the field 'Security' >> %s\n" % str(datetime.now()))
+    daily_updater("Security")
+
+    print("\nstart crawling the field 'Android' >> %s\n" % str(datetime.now()))
+    daily_updater("Android")
+
+    print("\nstart crawling the field 'System analyst' >> %s\n" % str(datetime.now()))
+    daily_updater("System analyst")
+    
+    print("\nstart removing invalid links >> %s\n" % str(datetime.now()))
     remove_invalid_links()
-    print("\n" + "start training DNN model' >> " + str(datetime.now()) + "\n")
+
+    print("\nstart training DNN model >> %s\n" + str(datetime.now()))
     training_DNN()
-    print("\n" + "Success! >> " + str(datetime.now()))
+
+    print("\nSuccess! >> %s" % str(datetime.now()))
 
 @task
 def remove_invalid_links():
     start = time.time()
     Jobs = Job.objects.all()
-    print("Total : " + str(len(Jobs)) + " jobs")
+    print("Total : %d jobs" % Jobs.count())
     
     s = retry_remove_invalid_url(Jobs)
     cc = 1
@@ -40,8 +56,8 @@ def remove_invalid_links():
     renewTorIP()
 
     end = time.time()
-    print("Total : " + str(len(Job.objects.all())) + " jobs")
-    print("Removed " + str(sum(s)) + " jobs >>  " + str(end-start) + " sec")
+    print("Total : %d jobs" % Job.objects.all().count())
+    print("Removed %d jobs >>  %d sec" % (sum(s), end-start))
 
 def retry_remove_invalid_url(Jobs):
     s = []

@@ -146,8 +146,8 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'steevebot.tasks.periodic_crawler',
         'schedule': crontab(minute=0, hour=0),
     },
-    'invalid_link_inspector': {
-        'task': 'steevebot.tasks.remove_invalid_links',
-        'schedule': crontab(minute=0, hour='1-23'),
-    },
+    # 'invalid_link_inspector': {
+    #     'task': 'steevebot.tasks.remove_invalid_links',
+    #     'schedule': crontab(minute=0, hour='1-23'),
+    # },
 }

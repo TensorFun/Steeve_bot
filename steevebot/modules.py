@@ -26,7 +26,7 @@ def norm_pls(pls):
 
 # In[15]:
 
-def pick_top_k(target_pls, dataset, k=100):
+def pick_top_k(target_pls, dataset, k=10):
     '''
     Params:
     - target_pls (from user's pls or company requirement): ['pl_A', 'pl_B', 'pl_C']
