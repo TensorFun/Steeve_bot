@@ -2,9 +2,8 @@ import requests
 import re
 from bs4 import BeautifulSoup
 import json
-# from multiprocessing import Pool
-from billiard import Pool
-# from multiprocessing import Pool
+from multiprocessing import Pool
+# from billiard import Pool
 import time
 
 import traceback
@@ -21,9 +20,15 @@ def retry_write_into_dict(input_data):
     href = []
     renewTorIP()
     try:
+        print("debug retry write into dict:", 1)
         with Pool(processes=70) as pool:
             href += pool.map(write_into_dict, input_data) 
+        print("debug retry write into dict:", 2)
     except:
+        print("debug retry write into dict:", 3)
+        print()
+        traceback.print_exc()
+        print()
         href = []
     return href
 
@@ -34,11 +39,17 @@ def retry_fetch_article_content(href):
         with Pool(processes=70) as pool:
             contents += pool.map(fetch_article_content, href)
     except:
+        print()
+        traceback.print_exc()
+        print()
         contents = []
     return contents
 
 def daily_updater(Key_work):
+    print("debug:", 0)
+    
     renewTorIP()
+    print("debug:", 1)
     start = time.time()
     
     domain_name = 'https://www.dice.com'
@@ -57,33 +68,21 @@ def daily_updater(Key_work):
         return
     print('Total have ' + str(pages) + ' pages')
 
-    # href = []
-    
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=70) as executor:
-    #     href += executor.map(write_into_dict, range(1, pages+1), repeat(domain_name), repeat(Key_work), repeat(Key_location))  
-
+    print("debug:", 2)
     input_data = [ (page, domain_name, Key_work, Key_location) for page in range(1, pages+1) ]
-    
-    # renewTorIP()
-    # with Pool(processes=70) as pool:
-    #     href += pool.map(write_into_dict, input_data) 
     
     href = retry_write_into_dict(input_data)
     cc = 1
     while not href:
         href = retry_write_into_dict(input_data)
         cc += 1
-    print(cc)
-
+        print("debug cc:", cc)
+#     print(cc)
+    
+    print("debug:", 3)
 
     href = [ url for page_href in href for url in page_href ]
     print("Total have : " + str(len(href)))
-    
-
-
-    # renewTorIP()
-    # with Pool(processes=70) as pool:
-    #     contents = pool.map(fetch_article_content, href)
 
     contents = retry_fetch_article_content(href)
     cc = 1
@@ -91,6 +90,8 @@ def daily_updater(Key_work):
         contents = retry_fetch_article_content(href)
         cc += 1
     print(cc)
+
+    print("debug:", 4)
     
     renewTorIP()
 
@@ -108,10 +109,14 @@ def daily_updater(Key_work):
 ## Add all pages's work
 def write_into_dict(input_data):
     page, domain_name, Key_work, Key_location = input_data[0], input_data[1], input_data[2], input_data[3]
-    response_page = session.get(domain_name+'/jobs/'+'q-'+Key_work+'-l-'+Key_location+'-radius-30-startPage-'+str(page)+'-jobs?', headers=headers)
+    try:
+        response_page = session.get(domain_name+'/jobs/'+'q-'+Key_work+'-l-'+Key_location+'-radius-30-startPage-'+str(page)+'-jobs?', headers=headers)
+    except:
+        print('Write into dict Error!!')
+        raise
+
     soup1 = BeautifulSoup(response_page.text,'lxml')
     # every page contains 30 urls
-    
     page_href = []
     for i in range(30):
         try:
@@ -121,7 +126,7 @@ def write_into_dict(input_data):
             print()
             traceback.print_exc()
             print()
-            
+
     if page%30 == 0:
         print('page '+ str(page)+' is finished')
         
@@ -129,8 +134,14 @@ def write_into_dict(input_data):
 
 def fetch_article_content(url):
     judege  = True
-    
-    response_work = session.get(url, headers=headers)
+    try:
+        response_work = session.get(url, headers=headers)
+    except:
+        print()
+        traceback.print_exc()
+        print()
+        raise
+
     soup = BeautifulSoup(response_work.text,'lxml')
     if soup.find("",{"class":"pull-left h1 jobs-page-header-h1"}):
         judege = False

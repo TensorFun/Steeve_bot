@@ -7,8 +7,8 @@ from .models import Job
 
 from datetime import datetime
 # import concurrent.futures
-# from multiprocessing import Pool
-from billiard import Pool
+from multiprocessing import Pool
+# from billiard import Pool
 from .candidates_of_keyword import training_DNN
 
 @task
@@ -29,18 +29,7 @@ def remove_invalid_links():
     start = time.time()
     Jobs = Job.objects.all()
     print("Total : " + str(len(Jobs)) + " jobs")
-    # remove_num = 0
-
-    # for job in Jobs:
-    #     if link_is_invalid(job.url):
-    #         job.delete()
-    #         remove_num += 1
-    # print("Removed", remove_num, "jobs")
-
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=70) as executor:
-    #     s = executor.map(remove_invalid_url, Jobs)
-    # with Pool(processes=70) as pool:
-    #     s = pool.map(remove_invalid_url, Jobs)
+    
     s = retry_remove_invalid_url(Jobs)
     cc = 1
     while not s:
