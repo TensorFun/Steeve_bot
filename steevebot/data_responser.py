@@ -1,4 +1,4 @@
-from .models import Job, PL
+from .models import Job, PL, User
 import random
 from collections import defaultdict
 
