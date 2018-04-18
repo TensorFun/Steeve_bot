@@ -10,7 +10,6 @@ requests = "*"
 numpy = "*"
 lxml = "*"
 pysocks = "*"
-django = "*"
 django-cors-headers = "*"
 "psycopg2-binary" = "*"
 "pdfminer.six" = "*"
@@ -23,6 +22,8 @@ googlemaps = "*"
 scikit-learn = "*"
 scipy = "*"
 tensorflow-gpu = "==1.4.1"
+cysignals = "*"
+django = "*"
 
 [dev-packages]
 

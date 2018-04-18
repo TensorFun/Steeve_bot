@@ -81,11 +81,11 @@ def training_DNN():
     
 # input user CV and get recommend jobs #
 def get_jobs(User_CV):
-    from .DNN_model import get_predict_field
+    # from .DNN_model import get_predict_field
     from .modules import pick_top_k,get_pl_keywords
     from .google_map_API import location_filter
     from .TFIDF import TFIDF
-    
+
     try:
         pl_cnt, words = TFIDF.get_tfidf()
 #         print('pl_cnt exists')
@@ -94,21 +94,23 @@ def get_jobs(User_CV):
         total_data = all_pl_data()
         Predict = TFIDF(total_data)
         pl_cnt, words = Predict.get_tfidf()
-
+    
+    print('load_data')
     # User_CV preprocessing 
     cv_PL = get_pl_keywords(User_CV)
     print(cv_PL)
 
     cv_toDB = ",".join(cv_PL)
 #     predict_field = "Frontend"
-    predict_field = get_predict_field(cv_PL,pl_cnt)
-    
+    print('start predict f')
+    predict_field = 0
+    # predict_field = get_predict_field(cv_PL,pl_cnt)
     # convert predict_field style
-    print(predict_field)
+    print('get field ',predict_field)
     predict_field_DB_style = convert_field_type(predict_field)
     
     #### get field data from DB ####
-    print(predict_field_DB_style)
+    print('to db style', predict_field_DB_style)
     p = get_field_PL(predict_field_DB_style)
     posts_predict_field = []
     

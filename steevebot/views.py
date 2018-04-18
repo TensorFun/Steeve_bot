@@ -34,16 +34,16 @@ def text_CV(request):
             email = json_data["email"]
             cv = json_data["CV"]
 
-            response = {"username": username, "email":email, "CV": cv}
-            return JsonResponse(response, safe=False)
-            # userPL, suggested_jobs, suggested_field = get_jobs(cv)
-            # if not User.objects.filter(email=email):
-            #     User.objects.create(username=username, email=email, PL=userPL)
-            # else:
-            #     User.objects.filter(email=email).update(username=username, PL=userPL)
-            
-            # response_dict = response_suggested_jobs(suggested_jobs, suggested_field)
-            # return JsonResponse(response_dict, safe=False)
+            #response = {"username": username, "email":email, "CV": cv}
+            #return JsonResponse(response, safe=False)
+            userPL, suggested_jobs, suggested_field = get_jobs(cv)
+            if not User.objects.filter(email=email):
+                User.objects.create(username=username, email=email, PL=userPL)
+            else:
+                User.objects.filter(email=email).update(username=username, PL=userPL)
+             
+            response_dict = response_suggested_jobs(suggested_jobs, suggested_field)
+            return JsonResponse(response_dict, safe=False)
         else:
             return HttpResponse("Please add username, email to your request body.")
     else:
@@ -61,18 +61,17 @@ def pdf_CV(request):
             else:
                 return HttpResponse("Please add a file to your request files.")
 
-
-            response = {"username": username, "email":email, "CV": cv}
-            return JsonResponse(response, safe=False)
-            # userPL, suggested_jobs, suggested_field = get_jobs(cv)
+            #response = {"username": username, "email":email, "CV": cv}
+            #return JsonResponse(response, safe=False)
+            userPL, suggested_jobs, suggested_field = get_jobs(cv)
             
-            # if not User.objects.filter(email=email):
-            #     User.objects.create(username=username, email=email, PL=userPL)
-            # else:
-            #     User.objects.filter(email=email).update(username=username, PL=userPL)
+            if not User.objects.filter(email=email):
+                User.objects.create(username=username, email=email, PL=userPL)
+            else:
+                User.objects.filter(email=email).update(username=username, PL=userPL)
             
-            # response_dict = response_suggested_jobs(suggested_jobs, suggested_field)
-            # return JsonResponse(response_dict, safe=False)
+            response_dict = response_suggested_jobs(suggested_jobs, suggested_field)
+            return JsonResponse(response_dict, safe=False)
         else:
             return HttpResponse("Please add username, email to your request body.")
     else:
@@ -85,11 +84,11 @@ def recruit_post(request):
             # json_data = json.loads(request.body)
             json_data = request.POST
             recruit_post = json_data["post"]
-            response = {"recruit_post": recruit_post}
+            #response = {"recruit_post": recruit_post}
+            #return JsonResponse(response, safe=False)
+            suggested_user_emails = get_applicants(recruit_post)
+            response = response_suggested_user(suggested_user_emails)
             return JsonResponse(response, safe=False)
-            # suggested_user_emails = get_applicants(recruit_post)
-            # response = response_suggested_user(suggested_user_emails)
-            # return JsonResponse(response, safe=False)
         else:
             return HttpResponse("Please add something to your request body.")
     else:

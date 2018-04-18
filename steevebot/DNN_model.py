@@ -24,12 +24,16 @@ DNN_model_ck_path = './dnn_model.ckpt'
 
 # w2v model
 from pyfasttext import FastText
-# model = FastText('/home/vincent/atos/wiki.en.bin')
 model = FastText('/home/yee0/Atos/wiki.en.bin')
+# model = FastText('/home/vincent/atos/wiki.en.bin')
 
 
 # In[3]:
 
+def reset_graph(seed=42):
+    tf.reset_default_graph()
+    tf.set_random_seed(seed)
+    np.random.seed(seed)
 
 # get post features 2400-d
 def get_pl_v(j,pl_cnt,NUM_PL,D_WORD):
@@ -369,6 +373,8 @@ def get_all_raw_pl():
 
 # Input Job PL, and predict a field
 def get_predict_field(pl_job,pl_cnt):
+    print(in)
+    reset_graph()
     NUM_PL = 8
     D_WORD = 300
 
