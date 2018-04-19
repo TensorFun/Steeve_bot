@@ -7,6 +7,5 @@ credentials.py
 *.ini
 *.sock
 uwsgi_params
-dnn_model.ckpt.*
 celerybeat-schedule.*
 checkpoint

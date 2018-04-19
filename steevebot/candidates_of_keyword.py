@@ -68,44 +68,64 @@ def convert_field_type(num_k):
             
 ######### for backend #########
 
-# preprocessing posts and save to DB, train a DNN model and save #
-def training_DNN():
-    from .DNN_model import get_Dnn_model,get_predict_field
+
+########## Below is SVM
+
+# train SVM
+Predict_TFIDF, Predict_SVM = None, None
+def training_SVM():
     from .TFIDF import TFIDF
-    
-    #preprocessing posts and save to DB
+    from .SVM import SVM
+
     save_pl_DB()
     total_data = all_pl_data()
     
-    # training DNN model and save
-    get_Dnn_model(total_data)
+    # create TFIDF and SVM instance
+    global Predict_TFIDF
+    global Predict_SVM
+    Predict_TFIDF = TFIDF(total_data)
+    Predict_SVM = SVM(Predict_TFIDF)
 
+    # reform data
+    X, y = [], []
+    for i, field_posts in enumerate(total_data):
+        for post in field_posts:
+            y.append(i)
+            X.append(post)
     
+    Predict_SVM.train(X, y)
+    Predict_SVM.save_model()
+
+        
 # input user CV and get recommend jobs #
-def get_jobs(User_CV):
-    # from .DNN_model import get_predict_field
-    from .modules import pick_top_k,get_pl_keywords
-    from .google_map_API import location_filter
+def get_jobs(user_cv):
+    from .modules import pick_top_k, get_pl_keywords
     from .TFIDF import TFIDF
+    from .SVM import SVM
+
+    global Predict_TFIDF
+    global Predict_SVM
 
     try:
-        pl_cnt, words = TFIDF.get_tfidf()
-#         print('pl_cnt exists')
-
+        pl_cnt, words = Predict_TFIDF.get_tfidf()
     except:
         total_data = all_pl_data()
-        Predict = TFIDF(total_data)
-        pl_cnt, words = Predict.get_tfidf()
+        Predict_TFIDF = TFIDF(total_data)
+        pl_cnt, words = Predict_TFIDF.get_tfidf()
+    
+    if not Predict_SVM:
+        Predict_SVM = SVM(Predict_TFIDF)
+        Predict_SVM.restore_model()
     
     print('load_data')
     # User_CV preprocessing 
-    cv_PL = get_pl_keywords(User_CV)
+    cv_PL = get_pl_keywords(user_cv)
     print(cv_PL)
 
     cv_toDB = ",".join(cv_PL)
 #     predict_field = "Frontend"
     print('start predict f')
-    predict_field = Predict.predict_field(cv_PL)
+    predict_field = Predict_SVM.predict(cv_PL)
     print(predict_field)
     # predict_field = 0
     # predict_field = get_predict_field(cv_PL,pl_cnt)
@@ -129,6 +149,70 @@ def get_jobs(User_CV):
     job_candidates = pick_top_k(cv_PL, posts_predict_field)
 
     return cv_toDB,job_candidates,predict_field_DB_style
+
+
+########### Below is DNN
+
+# preprocessing posts and save to DB, train a DNN model and save #
+def training_DNN():
+    from .DNN_model import get_Dnn_model,get_predict_field
+    
+    #preprocessing posts and save to DB
+    save_pl_DB()
+    total_data = all_pl_data()
+    
+    # training DNN model and save
+    get_Dnn_model(total_data)
+
+    
+# # input user CV and get recommend jobs #
+# def get_jobs(User_CV):
+#     # from .DNN_model import get_predict_field
+#     from .modules import pick_top_k,get_pl_keywords
+#     from .google_map_API import location_filter
+#     from .TFIDF import TFIDF
+
+#     try:
+#         pl_cnt, words = Predict.get_tfidf()
+# #         print('pl_cnt exists')
+
+#     except:
+#         total_data = all_pl_data()
+#         Predict = TFIDF(total_data)
+#         pl_cnt, words = Predict.get_tfidf()
+    
+#     print('load_data')
+#     # User_CV preprocessing 
+#     cv_PL = get_pl_keywords(User_CV)
+#     print(cv_PL)
+
+#     cv_toDB = ",".join(cv_PL)
+# #     predict_field = "Frontend"
+#     print('start predict f')
+#     predict_field = Predict.predict_field(cv_PL)
+#     print(predict_field)
+#     # predict_field = 0
+#     # predict_field = get_predict_field(cv_PL,pl_cnt)
+#     # convert predict_field style
+#     print('get field ',predict_field)
+#     predict_field_DB_style = convert_field_type(predict_field)
+    
+#     #### get field data from DB ####
+#     print('to db style', predict_field_DB_style)
+#     p = get_field_PL(predict_field_DB_style)
+#     posts_predict_field = []
+    
+#     ### future ###
+#     # location filter #
+#     for j in p:
+#         # if location_filter(user_location,j.PL_location):
+#         posts_predict_field.append({'id':j.Job.JobID,'PL':j.PL.split(",")})
+#     print(posts_predict_field[0])
+
+    
+#     job_candidates = pick_top_k(cv_PL, posts_predict_field)
+
+#     return cv_toDB,job_candidates,predict_field_DB_style
     
 
 # input company post and return applicants

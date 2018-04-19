@@ -2,6 +2,7 @@ from .models import Job, PL, User
 
 def create_PL(PL_data):
     if PL_data:
+        PL.objects.all().delete()
         for data in PL_data:
             jobID, field, pl, location = data[0], data[1], data[2], data[3]       
             try:
