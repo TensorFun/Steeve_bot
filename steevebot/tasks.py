@@ -9,7 +9,7 @@ from datetime import datetime
 # import concurrent.futures
 from multiprocessing import Pool
 # from billiard import Pool
-from .candidates_of_keyword import training_DNN
+from .candidates_of_keyword import training_SVM
 
 @task
 def periodic_crawler():
@@ -35,8 +35,8 @@ def periodic_crawler():
     print("\nstart removing invalid links >> %s\n" % str(datetime.now()))
     remove_invalid_links()
 
-    print("\nstart training DNN model >> %s\n" + str(datetime.now()))
-    training_DNN()
+    print("\nstart training SVM model >> %s\n" % str(datetime.now()))
+    training_SVM()
 
     print("\nSuccess! >> %s" % str(datetime.now()))
 

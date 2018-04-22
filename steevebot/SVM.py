@@ -12,7 +12,8 @@ import pickle
 
 class SVM:
     def __init__(self, TFIDF): # TODO: plz give me the model or using global singleton
-        self.model = FastText('/home/yee0/Atos/wiki.en.bin')
+        # self.model = FastText('/home/yee0/Atos/wiki.en.bin')
+        self.model = FastText("/home/nlplab/yee0/Atos/wiki.en.bin")
         self.TFIDF = TFIDF
         self.tfidf_dict, self.words = TFIDF.get_tfidf()
     

@@ -27,9 +27,9 @@ def retry_write_into_dict(input_data):
         print("debug retry write into dict: 2")
     except:
         print("debug retry write into dict: 3")
-        print()
-        traceback.print_exc()
-        print()
+	# print()
+        # traceback.print_exc()
+        # print()
         href = []
     return href
 

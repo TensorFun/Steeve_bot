@@ -24,7 +24,8 @@ DNN_model_ck_path = './dnn_model.ckpt'
 
 # w2v model
 from pyfasttext import FastText
-model = FastText('/home/yee0/Atos/wiki.en.bin')
+# model = FastText('/home/yee0/Atos/wiki.en.bin')
+model = FastText("/home/nlplab/yee0/Atos/wiki.en.bin")
 # model = FastText('/home/vincent/atos/wiki.en.bin')
 
 
