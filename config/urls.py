@@ -19,13 +19,13 @@ from django.urls import path, re_path, include
 from steevebot.views import Hello, text_CV, pdf_CV, recruit_post, random_job, all_job
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    re_path(r'^fb_mybot/', include('steevebot.urls')),
-    path('', Hello),
-    path('CV/text', text_CV),
-    path('CV/pdf', pdf_CV),
-    path('Recruit', recruit_post),
-    path('random', random_job),
-    path('all', all_job),
+    path('api/admin/', admin.site.urls),
+    re_path(r'^api/fb_mybot/', include('steevebot.urls')),
+    path('api', Hello),
+    path('api/CV/text', text_CV),
+    path('api/CV/pdf', pdf_CV),
+    path('api/Recruit', recruit_post),
+    path('api/random', random_job),
+    path('api/all', all_job),
 ]
 
