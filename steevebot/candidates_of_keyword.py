@@ -1,34 +1,36 @@
 from .training import *
 from .data_responser import *
 
+
 def save_pl_DB():
-    
+    '''
+    Extract PLs from all posts
+    '''
     import json
     from .training import create_PL
     from .modules import get_pl_keywords
-#     from .google_map_API import get_all_location_range
-     
+    # from .google_map_API import get_all_location_range
+    
     print("load data")
     total_data = [] 
+    # load all data from database
     ori_data = all_data()
     key = list(ori_data.keys())
     to_DB = []
     for k in key: 
         print(k)
         for num, job_num in enumerate(ori_data[k]):
-            if num%500 ==0:
+            if num%500 == 0:
                 print(num)
            
-            temp=[]
-
             pl_des = get_pl_keywords(job_num["jobDescription"])
             pl_ski = get_pl_keywords(job_num["skills"])
             
-            str_data = ''
             str_data = ",".join(pl_des+pl_ski) 
 
             #### future ####
             # get location #
+            temp = []
             temp.append(job_num["JobID"])
             temp.append(k)
             temp.append(str_data)
@@ -43,8 +45,12 @@ def save_pl_DB():
     create_PL(to_DB)
 
 def all_pl_data():
+    '''
+    Return all PL posts
+    '''
     from .modules import get_pl_keywords
 
+    # load all PL posts from database
     pl_data = all_PL()
     key = list(pl_data.keys())
     total_data = []
@@ -59,6 +65,12 @@ def all_pl_data():
     return total_data
 
 def convert_field_type(num_k):
+    '''
+    Convert the field corresponding to the number
+    
+    param: num_k (int) - field index
+    return: field name(str)
+    '''
     pl_data = all_PL()
     key = list(pl_data.keys())
     for n, k in enumerate(key):
@@ -68,12 +80,14 @@ def convert_field_type(num_k):
             
 ######### for backend #########
 
+######### Below is SVM
 
-########## Below is SVM
-
-# train SVM
+# use global variable to store SVM instance with its model
 Predict_TFIDF, Predict_SVM = None, None
 def training_SVM():
+    '''
+    Get all data and train SVM model
+    '''
     from .TFIDF import TFIDF
     from .SVM import SVM
 
@@ -94,11 +108,13 @@ def training_SVM():
             X.append(post)
     
     Predict_SVM.train(X, y)
-    Predict_SVM.save_model()
+    Predict_SVM.save_model() # store model in case of the system crashes
 
         
-# input user CV and get recommend jobs #
 def get_jobs(user_cv):
+    '''
+    Input user CV and return recommend jobs
+    '''
     from .modules import pick_top_k, get_pl_keywords
     from .TFIDF import TFIDF
     from .SVM import SVM
@@ -108,7 +124,8 @@ def get_jobs(user_cv):
 
     try:
         pl_cnt, words = Predict_TFIDF.get_tfidf()
-    except:
+    except: 
+        # if there is no TFIDF instance
         total_data = all_pl_data()
         Predict_TFIDF = TFIDF(total_data)
         pl_cnt, words = Predict_TFIDF.get_tfidf()
@@ -118,34 +135,35 @@ def get_jobs(user_cv):
         Predict_SVM.restore_model()
     
     print('load_data')
-    # User_CV preprocessing 
+    # User_CV preprocessing - get PLs
     cv_PL = get_pl_keywords(user_cv)
     print(cv_PL)
 
     cv_toDB = ",".join(cv_PL)
-#     predict_field = "Frontend"
+    # predict_field = "Frontend"
     print('start predict f')
     predict_field = Predict_SVM.predict(cv_PL)
     print(predict_field)
     # predict_field = 0
     # predict_field = get_predict_field(cv_PL,pl_cnt)
     # convert predict_field style
-    print('get field ',predict_field)
+    print('get field ', predict_field)
+
+    # get field name by field index
     predict_field_DB_style = convert_field_type(predict_field)
     
-    #### get field data from DB ####
+    # get field data from DB
     print('to db style', predict_field_DB_style)
     p = get_field_PL(predict_field_DB_style)
     posts_predict_field = []
     
-    ### future ###
+    ### TODO: future work ###
     # location filter #
     for j in p:
         # if location_filter(user_location,j.PL_location):
         posts_predict_field.append({'id':j.Job.JobID,'PL':j.PL.split(",")})
     print(posts_predict_field[0])
 
-    
     job_candidates = pick_top_k(cv_PL, posts_predict_field)
 
     return cv_toDB,job_candidates,predict_field_DB_style
@@ -153,11 +171,13 @@ def get_jobs(user_cv):
 
 ########### Below is DNN
 
-# preprocessing posts and save to DB, train a DNN model and save #
 def training_DNN():
+    '''
+    Preprocess posts and save them to DB, and train a DNN model
+    '''
     from .DNN_model import get_Dnn_model,get_predict_field
     
-    #preprocessing posts and save to DB
+    # get all PL posts
     save_pl_DB()
     total_data = all_pl_data()
     
@@ -217,6 +237,12 @@ def training_DNN():
 
 # input company post and return applicants
 def get_applicants(post):
+    '''
+    Input company requirement and recommend applicants
+
+    params: post(str) - company requirement
+    return: applicants(list) - top 6 suitable applicants
+    '''
     from .modules import pick_top_k,get_pl_keywords
     post_PL = get_pl_keywords(post)
 

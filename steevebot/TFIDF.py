@@ -1,14 +1,10 @@
-
-# coding: utf-8
-
-# In[14]:
-
-# Calc TFIDF scores
 from collections import defaultdict
 from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
 
 class TFIDF:
-    
+    '''
+    TFIDF instance, use sklearn package
+    '''
     def __init__(self, raw_doc):
         '''
         Params: 3-d array [[[], []], [[], []]]
@@ -37,8 +33,8 @@ class TFIDF:
     def get_tfidf(self):
         '''
         Returns:
-        tfidf_dict: dict[field_index[pl]] = score
-        words: all words in tfidf_score
+        - tfidf_dict: dict[field_index[pl]] = score
+        - words: all words in tfidf_score
         '''
         return self.tfidf_dict, self.words
     
@@ -56,10 +52,7 @@ class TFIDF:
         try:
             return max(scores, key=lambda x: x[1])[0]
         except:
-            return 0 # 不知道答案則猜 0 
-
-
-# In[17]:
+            return 0 # Unknown to return field: 0
 
 # ### How to use
 
@@ -78,14 +71,3 @@ class TFIDF:
 # tfidf_scores, words = Predict.get_tfidf()
 # predict_field = Predict.predict_field(post)
 # predict_field
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-

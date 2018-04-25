@@ -1,33 +1,35 @@
-
-# coding: utf-8
-
-# In[1]:
-
-# Extract PL
-
 from flashtext import KeywordProcessor
 
+# Open our PL filter
 pls = open('steevebot/Rule.txt', 'r', encoding='utf8').read().split('\n')
 
+# Use flashtext to extract PL
 keyword_processor = KeywordProcessor()
 keyword_processor.add_keywords_from_list(pls)
 
 def get_pl_keywords(content):
+    '''
+    Extract PLs from content
+    
+    Param: content(str)
+    '''
     return keyword_processor.extract_keywords(content)
+
 
 def norm_pls(pls):
     '''
+    Normalize all PLs by replacing '_' and '.js'
+
     Params: ['pl_A', 'pl_B', 'pl_C']
-    
     Returns: list for normalized pls
     '''
     return [pl.lower().replace(' ', '_').replace('.js', '') for pl in pls]
 
 
-# In[15]:
-
 def pick_top_k(target_pls, dataset, k=6):
     '''
+    Match PLs between user's PLs and posts' PLs and return top 6 posts' id
+
     Params:
     - target_pls (from user's pls or company requirement): ['pl_A', 'pl_B', 'pl_C']
     - dataset: every post's or candidate's pls [{id, pl}, {id, pl}, {id, pl}]
@@ -43,17 +45,4 @@ def pick_top_k(target_pls, dataset, k=6):
     return top_k
 
 
-# In[17]:
-
 # pick_top_k(['A','B','C'], [{'id': 1, 'PL': ['A','B']}, {'id': 12, 'PL': ['A','D']}, {'id': 3, 'PL': ['E']}])
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
