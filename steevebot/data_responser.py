@@ -2,6 +2,11 @@ from .models import Job, PL, User
 import random
 from collections import defaultdict
 
+#**************************************************#
+# These functions are accessing to DB and get data #
+#**************************************************#
+
+# Get all unprocessing posts that crawling from dice.com
 def all_data():
     jobs = Job.objects.all()
     data_dict = defaultdict(list)
@@ -37,7 +42,7 @@ def random_data():
             "jobDescription": job.jobDescription, 
             "url": job.url}
 
-
+# Get all preprocessing posts that sorted by field 
 def all_PL():
     pls = PL.objects.all()
     data_dict = defaultdict(list)
@@ -51,7 +56,7 @@ def all_PL():
 
     return data_dict
 
-
+# Get posts' information that suggested by NLP model
 def response_suggested_jobs(suggested_jobs, suggested_field):
     data_dict = defaultdict(list)
     
@@ -73,7 +78,7 @@ def response_suggested_jobs(suggested_jobs, suggested_field):
 
     return data_dict
 
-
+# Get applicants' information that suggested by NLP model
 def response_suggested_user(suggested_user_emails):
     response = []
     for email in suggested_user_emails:
